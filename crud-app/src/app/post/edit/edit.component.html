@@ -10,7 +10,7 @@
                 formControlName="title"
                 id="title" 
                 type="text" 
-                
+                [(ngModel)]="post.title"
                 class="form-control">
             <div *ngIf="control_getter['title'].touched && control_getter['title'].invalid" class="alert alert-danger">
                 <div *ngIf="control_getter['title'].errors && control_getter['title'].errors['required']">
@@ -25,7 +25,7 @@
                 formControlName="body"
                 id="body" 
                 type="text" 
-                
+                [(ngModel)]="post.body"
                 class="form-control">
             </textarea>
             <div *ngIf="control_getter['body'].touched && control_getter['body'].invalid" class="alert alert-danger">
