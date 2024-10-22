@@ -41,7 +41,7 @@ getPrices() {
     this.subscription.add(this.priceService.getPaginatedPrices(this.pageIndex, this.pageSize, this.sortingParam, ...parameters..., this.flag)
         .subscribe((res) => {
             // Assign fetched prices to Prices variable
-            this.bpData.data = res.content.filter(price => price.flag === this.flag);// Filter by Export or Domestic
+            this.bpData.data = res.content.filter(price => price.flag === this.flag);// Filter by condition_1 or condition_2
             this.totalRecords = res.totalRecordCount;
             this.bpData.sort = this.sort;
             this.needUpdate = false; // Reset update flag
@@ -53,7 +53,7 @@ getPrices() {
         }));
  }
 ```
-Style
+Styles
 ```css
 .flag-button {
     background-color: #FF5722;
@@ -67,8 +67,8 @@ HTML
 <mat-form-field  appearance="outline">
     <mat-label>Price</mat-label>
     <input matInput id="price"
-        [(ngModel)]="scrapDetailModel.price"
-        placeholder="Enter Scrap Price"
+        [(ngModel)]="detailModel.price"
+        placeholder="Enter Price"
         (ngModelChange)="onFormChange()"
         #price="ngModel"
         required
@@ -101,24 +101,31 @@ onFormChange() {
 
 validateRequest(): {validate: boolean, error : string}{
     this.priceRegex = /^\d{1,3}(\.\d+)?$/;
-    if(!this.scrapDetailModel.price) {
+    if(!this.detailModel.price) {
       return {validate: false, error : "Enter Price"};
     }
-    else if (Number(this.scrapDetailModel.price <= 0)) {
+    else if (Number(this.detailModel.price <= 0)) {
       return {validate: false, error : "Price must be positive"};
     }
-    else if (isNaN(Number(this.scrapDetailModel.price))) {
+    else if (isNaN(Number(this.detailModel.price))) {
       return { validate: false, error: "Price must be a number" };
     }
-    else if (this.priceRegex.test(this.scrapDetailModel.price.toString()) === false) {
+    else if (this.priceRegex.test(this.detailModel.price.toString()) === false) {
       return { validate: false, error: "Price must have up to 3 digits before decimal" };
     }
-    else if(!this.scrapDetailModel.effectiveDate){
+    else if(!this.detailModel.effectiveDate){
       return {validate: false, error : "Enter Date"};
     }...
     else{
       return {validate: true, error : null};
     }
+}
+```
+Styles
+```css
+mat-error {
+    line-height: 1;
+    text-align: center; 
 }
 ```
 
@@ -131,7 +138,7 @@ HTML
     matInput 
     type="text" 
     id="date" 
-    [(ngModel)]="scrapDetailModel.date" 
+    [(ngModel)]="detailModel.date" 
     [matDatepicker]="picker" 
     placeholder="Choose a date" 
     [matDatepickerFilter]="dateFilter" >
@@ -163,6 +170,8 @@ HTML
 ```
 Typescript
 ```typescript
+isDisable = true;
+...
 onFormChange() {
     this.formChanged = true;
     // The save button is disabled until the inputs in the form are valid.
