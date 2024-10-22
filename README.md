@@ -11,7 +11,7 @@ Form
 - [Date Filter](#anchor_fo_2)<br/>
 - [Button Disable](#anchor_fo_3)<br/>
 
-## Button Toggel<a name="anchor_fi_1"></a>
+## Button Toggle<a name="anchor_fi_1"></a>
 > There are two buttons that can filter the table, and the selected button should remain active.
 HTML
 ```html
