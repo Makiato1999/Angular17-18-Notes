@@ -24,7 +24,7 @@ HTML
 ```
 Typescript
 ```typescript
-isExpFlagOn = false;
+isFlagOn = false;
 ...
 setFlagOn(){
     ...
@@ -53,47 +53,72 @@ getPrices() {
         }));
  }
 ```
+Style
+```css
+.flag-button {
+    background-color: #FF5722;
+    color: white;
+}
+```
 
 ## Form Input Validation with ngModel<a name="anchor_fo_1"></a>
 HTML
 ```html
-<mat-form-field appearance="outline">
-    <mat-label>Customer Number</mat-label>
-    <input 
-    matInput 
-    [(ngModel)]="customerDetailModel.legacyCustNo" 
-    id="legacyCustNo" 
-    (ngModelChange)="onFormChange()" 
-    #custNo="ngModel" 
-    required maxlength="6" 
-    pattern="^[0-9]*$" 
-    (focus)="custNo.control.markAsTouched()" >
+<mat-form-field  appearance="outline">
+    <mat-label>Price</mat-label>
+    <input matInput id="price"
+        [(ngModel)]="scrapDetailModel.price"
+        placeholder="Enter Scrap Price"
+        (ngModelChange)="onFormChange()"
+        #price="ngModel"
+        required
+        [pattern]="priceRegex" >
     <mat-error 
-    *ngIf="custNo.hasError('required') && custNo.touched ">
-        Customer number is required
+        *ngIf="price.hasError('required') && price.touched && price.dirty">
+        Price is required
     </mat-error>
     <mat-error 
-    *ngIf="custNo.hasError('maxlength') && custNo.touched || custNo.hasError('pattern')">
-        Max 6 digits and numeric
+        *ngIf="price.hasError('pattern') && price.touched" >
+        Numbers only, max 3 digits before decimal
     </mat-error>
 </mat-form-field>
 ```
 Typescript
 ```typescript
-// This method is for form submission
-// not for showing input errors immediately when the user is typing
-validateRequest(): {validate: boolean, error : string} {
-    ...
-    if(!this.customerDetailModel.legacyCustNo) {
-      return {validate: false, error : "Enter Customer Number"};
+isFormInvalid = true; // The save button is disabled until the inputs in the form are valid.
+priceRegex : RegExp;
+...
+onFormChange() {
+    this.formChanged = true; 
+    // The save button is disabled until the inputs in the form are valid.
+    const {validate, error} = this.validateRequest();
+    if (validate == false) {
+      this.isFormInvalid = true;
+    } else {
+      this.isFormInvalid = false;
     }
-    else if (isNaN(Number(this.customerDetailModel.legacyCustNo))) {
-      return {validate: false, error : "Customer Number must contain only numbers"};
+}
+
+validateRequest(): {validate: boolean, error : string}{
+    this.priceRegex = /^\d{1,3}(\.\d+)?$/;
+    if(!this.scrapDetailModel.price) {
+      return {validate: false, error : "Enter Price"};
     }
-    else if( this.customerDetailModel.legacyCustNo.length > 6){
-      return {validate: false, error : "Enter Customer Number with no more than 6 digits"};
+    else if (Number(this.scrapDetailModel.price <= 0)) {
+      return {validate: false, error : "Price must be positive"};
     }
-    ...
+    else if (isNaN(Number(this.scrapDetailModel.price))) {
+      return { validate: false, error: "Price must be a number" };
+    }
+    else if (this.priceRegex.test(this.scrapDetailModel.price.toString()) === false) {
+      return { validate: false, error: "Price must have up to 3 digits before decimal" };
+    }
+    else if(!this.scrapDetailModel.effectiveDate){
+      return {validate: false, error : "Enter Date"};
+    }...
+    else{
+      return {validate: true, error : null};
+    }
 }
 ```
 
