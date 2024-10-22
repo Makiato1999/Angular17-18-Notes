@@ -11,6 +11,9 @@ Form
 - [Date Filter](#anchor_fo_2)<br/>
 - [Button Disable](#anchor_fo_3)<br/>
 
+Table
+- [Dynamic Table](#anchor_ta_1)<br/>
+
 ## Button Toggle<a name="anchor_fi_1"></a>
 > There are two buttons that can filter the table, and the selected button should remain active.
 
@@ -185,6 +188,5 @@ onFormChange() {
   }
 ```
 
-**crud-app** resouce: 
 
 **crud-tutorial-app** resouce: https://www.bezkoder.com/angular-17-crud-example/
