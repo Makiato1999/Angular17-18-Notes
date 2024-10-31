@@ -17,7 +17,7 @@ Form
 Table
 - [Dynamic Table](#anchor_ta_1)<br/>
 
-## Session Storage, sharing data across multiple components
+## Session Storage, sharing data across multiple components <a name="anchor_se_1"></a>
 #### Subject
 session-storage.service.ts (Observable)
 ```typescipt
@@ -66,16 +66,27 @@ export class OfferDetailComponent implements OnInit, OnDestroy {
 ```
 offer-display.component.ts (Observer)
 ```typescipt
+import { SessionService } from 'src/app/services/session-storage.service';
 
+export class AppHeaderComponent implements OnInit {
+    ...
+    constructor(
+        ...
+        private sessionService: SessionService) {
+    }
+    ...
+    ngOnInit(): void {
+        ...
+        this.getLastOpenedOffer();
+    }
+    ...
+}
 ```
 > Subject 不会存储或缓存它发送的最新值，因此当你在 constructor 中调用 next 后，这个值并不会被保留。换句话说，当组件稍后订阅 offerIdAvailable$ 时，它不会自动收到之前调用 next 时发送的值。只有当前活跃的订阅者才能接收到 Subject 的值。在 Angular 中，服务的 constructor 会在服务被首次注入到组件或其他服务时调用。这意味着，当应用启动时，SessionService 的 constructor 会立即执行，获取并尝试发送 sessionStorage 中的初始值。
 然而，这个时候可能没有任何组件订阅 offerIdAvailable$。因此，尽管你在 constructor 中调用了 next，但没有任何活跃的订阅者能接收到这个值。
 
 #### BehaviorSubject
 session-storage.service.ts
-```typescipt
-
-```
 
 ## Button Toggle<a name="anchor_fi_1"></a>
 > There are two buttons that can filter the table, and the selected button should remain active.
