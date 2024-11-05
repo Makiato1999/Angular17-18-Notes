@@ -19,7 +19,7 @@ Table
 
 ## Session Storage, sharing data across multiple components <a name="anchor_ss_1"></a>
 #### Subject
-session-storage.service.ts (Observable)
+session-storage.service.ts (Service)
 ```typescript
 import { Injectable } from "@angular/core";
 import { LAST_OFFER_KEY } from 'src/app/constants/constant';
@@ -57,14 +57,14 @@ export class OfferDetailComponent implements OnInit, OnDestroy {
         private sessionService: SessionService) {
     }
     ...
-    set() {
+    setLastOpenedOffer() {
         this.sessionService.setLastOpenedOfferId(this.offerId);
-        this.router.navigate(['/coil-list']);
+        ...
     }
     ...
 }
 ```
-offer-display.component.ts (Observer)
+offer-display.component.ts (Observable)
 ```typescript
 import { SessionService } from 'src/app/services/session-storage.service';
 
@@ -80,15 +80,55 @@ export class AppHeaderComponent implements OnInit {
         this.getLastOpenedOffer();
     }
     ...
+    getLastOpenedOffer() {
+        this.sessionService.offerIdAvailable$.subscribe(offerId => {
+            this.offerService.getInternalLiftOfferDetail(Number(offerId)).subscribe({
+                next: res => {
+                    ...
+                },
+                error: () => {
+                    ...               
+                }
+            });
+        });
+    }
 }
 ```
 > Subject 不会存储或缓存它发送的最新值，因此当你在 constructor 中调用 next 后，这个值并不会被保留。换句话说，当组件稍后订阅 offerIdAvailable$ 时，它不会自动收到之前调用 next 时发送的值。只有当前活跃的订阅者才能接收到 Subject 的值。在 Angular 中，服务的 constructor 会在服务被首次注入到组件或其他服务时调用。这意味着，当应用启动时，SessionService 的 constructor 会立即执行，获取并尝试发送 sessionStorage 中的初始值。
 然而，这个时候可能没有任何组件订阅 offerIdAvailable$。因此，尽管你在 constructor 中调用了 next，但没有任何活跃的订阅者能接收到这个值。
 
-#### Subject
-
 #### BehaviorSubject
 session-storage.service.ts
+```typescript
+import { Injectable } from "@angular/core";
+import { LAST_DRAFT_OFFER_KEY } from 'src/app/constants/constant';
+import { BehaviorSubject, Subject } from 'rxjs';
+
+@Injectable({
+    providedIn: 'root'
+})
+
+export class SessionService {
+    private offerIdAvailable = new BehaviorSubject<string | null>(null);
+    offerIdAvailable$ = this.offerIdAvailable.asObservable();
+
+    constructor() {
+        const lastOfferId = this.getLastOpenedDraftOfferId();
+        if (lastOfferId) {
+            this.offerIdAvailable.next(lastOfferId);
+        }
+    }
+
+    setLastOpenedDraftOfferId(offerId: number) {
+        sessionStorage.setItem(LAST_DRAFT_OFFER_KEY, offerId.toString());
+        this.offerIdAvailable.next(offerId.toString()); // Notify subscribers
+    }
+
+    getLastOpenedDraftOfferId(): string | null {
+        return sessionStorage.getItem(LAST_DRAFT_OFFER_KEY);
+    }
+}
+```
 
 ## Button Toggle<a name="anchor_fi_1"></a>
 > There are two buttons that can filter the table, and the selected button should remain active.
