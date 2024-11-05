@@ -4,7 +4,8 @@
 
 ## Table of Contents
 RxJS
-- [sessionStorage](#anchor_ss_1)<br/>
+- [Subject & BehaviorSubject](https://github.com/Makiato1999/Angular17-18-Notes/blob/main/notes/Subject_BehaviorSubject.md)<br/>
+- [sessionStorage](https://github.com/Makiato1999/Angular17-18-Notes/blob/main/notes/sessionStorage.md)<br/>
 
 Filter
 - [Button Toggle](#anchor_fi_1)<br/>
